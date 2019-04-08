@@ -7,6 +7,9 @@
      :class="['header', { 'header_hidden': isHidden }]"
 
   3. Animate header show/hide with css transition
+
+  4. Mixin will add 'isOnTop' data property,
+     when header is near very top of the page (less than this.topOffset)
 */
 
 import throttle from 'lodash/throttle'
@@ -14,8 +17,10 @@ import throttle from 'lodash/throttle'
 export default {
   data () {
     return {
+      isOnTop: true,
       isHidden: false,
-      prevScrollPosition: 0
+      prevScrollPosition: 0,
+      topOffset: 100
     }
   }, 
   mounted () {
@@ -29,6 +34,9 @@ export default {
     onScroll: throttle(function () {
       const isScrollingDown = this.prevScrollPosition < window.scrollY
       this.isHidden = isScrollingDown
+
+      this.isOnTop = window.scrollY < this.topOffset
+
       this.prevScrollPosition = window.scrollY
     }, 70)
   }
