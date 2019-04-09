@@ -32,12 +32,12 @@ export default {
   },
   methods: {
     onScroll: throttle(function () {
-      const isScrollingDown = this.prevScrollPosition < window.scrollY
+      const isScrollingDown = this.prevScrollPosition < window.pageYOffset
       this.isHidden = isScrollingDown
 
-      this.isOnTop = window.scrollY < this.topOffset
+      this.isOnTop = window.pageYOffset < this.topOffset
 
-      this.prevScrollPosition = window.scrollY
+      this.prevScrollPosition = window.pageYOffset
     }, 70)
   }
 }
