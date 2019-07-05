@@ -1,9 +1,4 @@
-function removeQueryParameterFromString (url, parameter) {
-  return url
-    .replace(new RegExp('[?&]' + parameter + '=[^&#]*(#.*)?$'), '$1')
-    .replace(new RegExp('([?&])' + parameter + '=[^&]*&'), '$1')
-}
-
+// ADD QUERY PARAM WITHOUT PAGE RELOAD
 export function addQueryParam (key, value) {
   if (history.pushState) {
     let currentUrl = window.location.href
@@ -21,6 +16,7 @@ export function addQueryParam (key, value) {
   }
 }
 
+// REMOVE QUERY PARAM WITHOUT PAGE RELOAD
 export function removeQueryParam (key) {
   if (history.replaceState) {
     const regExp = new RegExp(`[?&]${key}=[^&]+`)
@@ -31,4 +27,12 @@ export function removeQueryParam (key) {
       location.pathname + location.search.replace(regExp, '').replace(/^&/, '?')
     )
   }
+}
+
+
+// helper
+function removeQueryParameterFromString (url, parameter) {
+  return url
+    .replace(new RegExp('[?&]' + parameter + '=[^&#]*(#.*)?$'), '$1')
+    .replace(new RegExp('([?&])' + parameter + '=[^&]*&'), '$1')
 }
