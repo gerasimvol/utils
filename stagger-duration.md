@@ -1,1 +1,1 @@
-duration = (staggerDelay * (itemsLength - 1) + staggerDuration)
+`duration = (staggerDelay * (itemsLength - 1) + staggerDuration)`
