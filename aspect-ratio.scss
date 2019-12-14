@@ -29,3 +29,7 @@
     @error "pseudo-ratio mixin: Argument must be map or number";
   }
 }
+
+@function is-number($value) {
+  @return type-of($value) == 'number';
+}
