@@ -1,0 +1,31 @@
+// mixin accept argument: map (from smaller to larger, etc. (sm: 16/9, md: 3/4, ...)) or number (etc. 16/9)
+@mixin aspect-ratio($arg) {
+  position: relative;
+
+  @if type-of($arg) == 'map' {
+    &::before {
+      display: block;
+      width: 100%;
+      content: '';
+
+      @each $breakpoint, $value in $arg {
+        @include respUp($breakpoint) {
+          padding-top: percentage(1/$value);
+        }
+      }
+    }
+  }
+
+  @else if is-number($arg) {
+    &::before {
+      display: block;
+      width: 100%;
+      padding-top: percentage(1/$arg);
+      content: '';
+    }
+  }
+
+  @else {
+    @error "pseudo-ratio mixin: Argument must be map or number";
+  }
+}
