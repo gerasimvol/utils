@@ -1,11 +1,13 @@
 // map styling in format [{}]
 // import styles from './google-maps-styles'
 
+const googleMapsApiLoadedEvent = createEvent('google-maps:loaded')
+
 const GOOGLE_MAP_SCRIPT_ID = 'google-maps-script-tag'
 
 const appearance = {
   settings: {
-    // styles,
+    styles,
     disableDefaultUI: true
   },
   removeGoogleBranding: true
@@ -45,38 +47,52 @@ function _removeGoogleBranding () {
 }
 
 function _loadGoogleMapsApi (key, language) {
-  return new Promise(resolve => {
-    const onApiLoaded = 'onGoogleMapsApiLoaded'
-    window[onApiLoaded] = resolve
+  const onApiLoaded = 'onGoogleMapsApiLoaded'
 
-    const scriptTag = document.createElement('script')
-    scriptTag.id = GOOGLE_MAP_SCRIPT_ID
-    scriptTag.src = `https://maps.googleapis.com/maps/api/js?key=${key}&language=${language}&callback=${onApiLoaded}`
-
-    document.body.appendChild(scriptTag)
-
-    if (appearance.removeGoogleBranding) {
-      _removeGoogleBranding()
-    }
-  })
-}
-
-export async function initGoogleMap ({ key, el, options, language }) {
-  if (!document.getElementById(GOOGLE_MAP_SCRIPT_ID)) {
-    await _loadGoogleMapsApi(key, language)
+  window[onApiLoaded] = () => {
+    document.documentElement.dispatchEvent(googleMapsApiLoadedEvent)
   }
 
-  const map = new google.maps.Map(el, {
-    ...options,
-    ...appearance.settings
-  })
+  const scriptTag = document.createElement('script')
+  scriptTag.id = GOOGLE_MAP_SCRIPT_ID
+  scriptTag.src = `https://maps.googleapis.com/maps/api/js?key=${key}&language=${language}&callback=${onApiLoaded}`
 
-  return map
+  document.body.appendChild(scriptTag)
+
+  if (appearance.removeGoogleBranding) {
+    _removeGoogleBranding()
+  }
+}
+
+export function initGoogleMap ({ key, el, options, language }) {
+  if (window.google) {
+    // API already loaded - just init map
+    return new Promise(resolve => createMap(resolve))
+  } else {
+    // start downloading google maps
+    if (!document.getElementById(GOOGLE_MAP_SCRIPT_ID)) {
+      _loadGoogleMapsApi(key, language)
+    }
+
+    // wait till API will be loaded - then init map
+    return new Promise(resolve => {
+      document.documentElement.addEventListener('google-maps:loaded', () => {
+        createMap(resolve)
+      })
+    })
+  }
+
+  function createMap (resolve) {
+    const map = new google.maps.Map(el, {
+      ...options,
+      ...appearance.settings
+    })
+    resolve(map)
+  }
 }
 
 export function createMarker (options) {
   const marker = new google.maps.Marker(options)
-
   return marker
 }
 
@@ -87,7 +103,14 @@ export function fitBounds ({ markers, map }) {
     bounds.extend(marker.getPosition())
   })
 
-  map.setOptions({ maxZoom: 6 })
   map.fitBounds(bounds)
-  map.setOptions({ maxZoom: undefined })
+}
+
+// helpers
+function createEvent (name, bubbles = false, cancelable = true) {
+  if (!process.browser) return
+
+  const event = document.createEvent('Event')
+  event.initEvent(name, bubbles, cancelable)
+  return event
 }
