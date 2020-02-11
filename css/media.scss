@@ -1,5 +1,5 @@
-// Media of at least the minimum breakpoint width. No query for the smallest breakpoint.
-// Makes the @content apply to the given breakpoint and wider.
+$breakpoints: ("sm": 0, "md": 768, "lg": 1280, "xl": 1920);
+
 @mixin respUp($name, $landscape: false, $breakpoints: $breakpoints) {
   $min: breakpoint-min($name, $breakpoints);
 
@@ -20,8 +20,6 @@
   }
 }
 
-// Media of at most the maximum breakpoint width. No query for the largest breakpoint.
-// Makes the @content apply to the given breakpoint and narrower.
 @mixin respDown($name, $landscape: false, $breakpoints: $breakpoints) {
   $max: breakpoint-max($name, $breakpoints);
 
@@ -42,8 +40,6 @@
   }
 }
 
-// Media that spans multiple breakpoint widths.
-// Makes the @content apply between the min and max breakpoints
 @mixin respBetween(
   $lower,
   $upper,
@@ -72,9 +68,6 @@
   }
 }
 
-// Media between the breakpoint's minimum and maximum widths.
-// No minimum for the smallest breakpoint, and no maximum for the largest one.
-// Makes the @content apply only to the given breakpoint, not viewports any wider or narrower.
 @mixin respOnly($name, $landscape: false, $breakpoints: $breakpoints) {
   $min: breakpoint-min($name, $breakpoints);
   $max: breakpoint-max($name, $breakpoints);
@@ -110,6 +103,7 @@
   }
 }
 
+// helpers
 @function breakpoint($key: "sm") {
   @return map-get($breakpoints, $key);
 }
