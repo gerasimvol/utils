@@ -1,3 +1,5 @@
+// Source: https://stackoverflow.com/questions/13949059/persisting-the-changes-of-range-objects-after-selection-in-html/13950376#13950376
+
 export default function (el, fn) {
   function saveSelection (containerEl) {
     const range = window.getSelection().getRangeAt(0)
